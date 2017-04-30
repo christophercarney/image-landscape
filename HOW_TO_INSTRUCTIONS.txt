@@ -1,0 +1,9 @@
+I've attached several .csv files and also the .jpg images that they were derived from. 
+In image.scd on line 10 you can change the .csv file name and then you must redefine the whole block and start the task again.
+The task represents the entire soundscape of the image and once starting the synth I recommend looking back at the image to get the full effect.
+
+The program will work with any images but it is meant to work with landscapes and nature pictures. In the project folder there is the \im_analyzer folder
+and inside is im_analyzer.py. On line 5 you can give it the path to any image and it will output a .csv file. Move the outputted .csv file into the same directory
+as image.scd and repeat the process above. You will also need to download the "pillow" library for python 3 in order for the python script to run correctly.
+
+However, all that above is fairly involved, so that's why I included an array of different image/csv files to use without having to hassle with any python.

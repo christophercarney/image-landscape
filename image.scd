@@ -2,6 +2,8 @@
 //Music 452 Final Project
 //Synth Soundscape from landscapes
 
+t.start;
+t.stop;
 (
 //read the file
 //change the name of the .csv file to test other csv's in the directory
@@ -66,16 +68,16 @@ SynthDef.new("q1_lead", {
 	arg freq=440, cutoff=~q1[0], bandwidth=~q1[2], gate=1;
 	var sig1, sig2, out, pan, filt, level;
 
-	level=SinOsc.kr(2).range(0, 0.2);
+	level=SinOsc.kr(~q1[2]/100).range(0, ~q1[1]/400);
 
 	sig1 = Select.ar(~q1_blue, [Pulse.ar(freq, 0.5, level, 0), SinOsc.ar(freq, 0.2, level, 0)]);
 	sig2 = Select.ar(~q1_blue, [LFTri.ar(freq*(~q1[1]/125), 0.2, level, 1), Saw.ar(freq*(~q1[1]/125), level)]);
 
-	filt=Resonz.ar(sig1+sig2, ~q1[0]+~q1[1]+~q1[2], ~q1[2]/255, 0.1);
+	filt=Resonz.ar(sig1+sig2, ~q1[0]+~q1[1]+~q1[2], ~q1[2]/255, 0.15);
 	out=Pan2.ar(filt, SinOsc.kr(~q1[0]/255));
 
-	Out.ar(0, out*0.5);
-	Out.ar(1, out*0.5);
+	Out.ar(0, out);
+	Out.ar(1, out);
 }).add;
 
 //Synth for quadrant two
@@ -95,11 +97,11 @@ SynthDef.new("q2_whistle", {
 	];
 	o=Select.ar(~q2_blue, filter);
 
-	b=RLPF.ar(Saw.ar(110), 440, 2);
+	b=RLPF.ar(Saw.ar(~q4[0]*2), ~q4[2]*2, 1);
 	v=Decay2.ar(b, att2, 6, 0.05);
 
-	out=(o + v);
-	out=out*0.15;
+	out=(o*10 + v);
+	out=out*0.10;
 
 	Out.ar(0, out);
 	Out.ar(1, out);
@@ -122,8 +124,8 @@ SynthDef("q3_ring", {
 	out = (syn1*0.75);
 	filt = RLPF.ar(out, freq*1.15, 0.75);
 
-	Out.ar(0, 0.25*filt*EnvGen.ar(env, gate:gate, doneAction:2));
-	Out.ar(1, 0.25*filt*EnvGen.ar(env, gate:gate, doneAction:2));
+	Out.ar(0, 0.12*filt*EnvGen.ar(env, gate:gate, doneAction:2));
+	Out.ar(1, 0.12*filt*EnvGen.ar(env, gate:gate, doneAction:2));
 }).add;
 
 //Synth for quadrant four
@@ -138,27 +140,25 @@ SynthDef.new("q4_random", {
 	pan2 = Saw.kr(~q4[0]/255).range(-1*(~q4[0]/255), ~q4[0]/255);
 
 	o = SinOsc.ar(mod1, 0, 0.3) + SinOsc.ar(mod1, 0, 0.3);
-	osc2 = SinOsc.ar(mod2, 0, LFTri.kr(0.4).range(0.05, 0.5));
+	osc2 = SinOsc.ar(mod2, 0, LFTri.kr(0.4).range(~q4[0]/500, ~q4[1]/500));
 	out = Pan2.ar(o, pan1) + Pan2.ar(osc2, pan2);
 
-	Out.ar(0, out*0.08);
-	Out.ar(1, out*0.08);
+	Out.ar(0, out*0.05);
+	Out.ar(1, out*0.05);
 }).add;
 
 //Synth for quadrant five
 SynthDef.new("q5_klank", {
 	arg freq=440;
 
-	p=Select.ar(~q5_blue, [Impulse.ar(~q5[1]/510), Impulse.ar(~q5[2]/510)]);
-	k=Klank.ar(`[[freq+(~q5[0]/2), freq+(~q5[1]/2), freq+(~q5[2]/2)],[~q5[0]/255, ~q5[1]/255, ~q5[2]/255],[(~q5[0]/255)*2, (~q5[1]/255)*2, (~q5[2]/255)*2]], p);
-	o=Pan2.ar(k, Select.ar(~q5_blue, [SinOsc(~q5[1]/510), SinOsc(~q5[1]/510)]));
+	p=Select.ar(~q5_blue, [Impulse.ar(~q5[1]/100), Impulse.ar(~q5[2]/255)]);
+	k=Klank.ar(`[[freq+(~q5[0]/3), freq+(~q5[1]/3), freq+(~q5[2]/3)],[~q5[0]/255, ~q5[1]/255, ~q5[2]/255],[(~q5[0]/255)*2, (~q5[1]/255)*2, (~q5[2]/255)*2]], p);
+	o=Pan2.ar(k, Select.ar(~q5_blue, [SinOsc(~q5[1]/510).range(-1*~q5[2]/255, ~q5[2]/255), SinOsc(~q5[1]/510).range(-1*~q5[2]/255, ~q5[2]/255)]));
 	Out.ar(0, k*0.10);
 	Out.ar(1, k*0.10)
 }).add;
-)
 
-
-//play the constructed synth
+//play the constructed soundscape
 (
 t=Task({
 	var synth1, synth2, synth3a, synth3b, synth3c, synth4, synth5;
@@ -217,10 +217,17 @@ t=Task({
 	})
 })
 )
+)
 
 t.start;
 t.stop;
 
+//Test for each synth individually, for sound levels, etc
+e=Synth("q1_lead", [\freq, ~global_freq]);
+r=Synth("q2_whistle", [\freq, ~global_freq]);
+u=Synth("q3_ring", [\freq, ~global_freq]);
+t=Synth("q4_random", [\freq, ~global_freq]);
+y=Synth("q5_klank", [\freq, ~global_freq]);
 
 s.meter;
 File.getcwd;
