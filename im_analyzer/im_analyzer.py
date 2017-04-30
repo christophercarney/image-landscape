@@ -2,7 +2,7 @@ import argparse
 from PIL import Image
 
 def output_analysis(path):
-    img_file = Image.open("forrest.jpg")
+    img_file = Image.open("flowers.jpg")
     img = img_file.load()
 
     # (2) Get image width & height in pixels split into quadrants
